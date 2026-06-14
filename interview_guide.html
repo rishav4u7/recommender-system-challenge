@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ads Recommendation Project Guide & Interview Prep</title>
+    <meta name="description" content="A comprehensive interview preparation guide and solution walkthrough for the Ads Recommendation System project, covering two-stage hybrid stacking models, temporal data splitting, offline evaluation metrics, and design decisions.">
     <!-- MathJax script for LaTeX equation rendering -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <!-- Mermaid script for rendering flowcharts -->
@@ -11,7 +12,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             mermaid.initialize({
-                startOnLoad: true,
+                startOnLoad: false,
                 theme: 'dark',
                 themeVariables: {
                     background: '#151d30',
@@ -390,24 +391,24 @@
 <body>
 
     <!-- Header Section -->
-    <div class="header">
+    <header class="header">
         <span class="badge">Interview Prep & Guide</span>
         <h1>Ads Recommendation System</h1>
         <p>A comprehensive walkthrough of the problem constraints, hybrid modeling solution, and standard system design interview questions.</p>
-    </div>
+    </header>
 
-    <!-- Navigation Tabs -->
-    <div class="container">
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab(event, 'problem')">📋 Problem Statement</button>
-            <button class="tab-btn" onclick="switchTab(event, 'solution')">🛠️ Solution & Architecture</button>
-            <button class="tab-btn" onclick="switchTab(event, 'metrics')">📊 Metrics & Insights</button>
-            <button class="tab-btn" onclick="switchTab(event, 'eli5')">🧸 Kids Guide (ELI5)</button>
-            <button class="tab-btn" onclick="switchTab(event, 'interview')">🧠 Interview Q&A FAQ</button>
-        </div>
+    <!-- Navigation Tabs & Main Container -->
+    <main class="container">
+        <nav class="nav-tabs" aria-label="Main Navigation">
+            <button id="tab-btn-problem" class="tab-btn active" onclick="switchTab(event, 'problem')">📋 Problem Statement</button>
+            <button id="tab-btn-solution" class="tab-btn" onclick="switchTab(event, 'solution')">🛠️ Solution & Architecture</button>
+            <button id="tab-btn-metrics" class="tab-btn" onclick="switchTab(event, 'metrics')">📊 Metrics & Insights</button>
+            <button id="tab-btn-eli5" class="tab-btn" onclick="switchTab(event, 'eli5')">🧸 Kids Guide (ELI5)</button>
+            <button id="tab-btn-interview" class="tab-btn" onclick="switchTab(event, 'interview')">🧠 Interview Q&A FAQ</button>
+        </nav>
 
         <!-- TAB 1: PROBLEM STATEMENT -->
-        <div id="problem" class="tab-content active">
+        <section id="problem" class="tab-content active" aria-labelledby="tab-btn-problem">
             <div class="card">
                 <h2 class="section-title">📌 Problem Overview</h2>
                 <p>You are operating as a Data Scientist at a marketing company that serves ads to users on mobile messaging platforms (WhatsApp, Messenger, LINE). The goal is to maximize user engagement (clicks) by recommending the most relevant items (products) to users based on historical interaction logs and metadata.</p>
@@ -577,10 +578,10 @@
                     </p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- TAB 2: SOLUTION & ARCHITECTURE -->
-        <div id="solution" class="tab-content">
+        <section id="solution" class="tab-content" aria-labelledby="tab-btn-solution">
             <div class="card">
                 <h2 class="section-title">⚙️ Two-Stage Hybrid Stacking Model</h2>
                 <p style="margin-bottom: 20px; line-height: 1.6;">
@@ -619,7 +620,7 @@
                         <div class="arch-step-num">2</div>
                         <div class="arch-step-content">
                             <h4>Step 2: Target Encoding and Content Affinities</h4>
-                            <p>We calculate historical click-through rates (CTR) for each user (user_ctr), item (item_ctr), and category/price buckets. To prevent overfitting on rare items or low-impression users, Laplace smoothing is applied. Categorical variables (age group, category, price bucket) are one-hot encoded.</p>
+                            <p>We calculate historical click-through rates (CTR) for each user (<code>user_ctr</code>) and item (<code>item_ctr</code>) using Laplace smoothing (\(\beta=5\)) to prevent noisy estimates for low-frequency interactions. To handle user preferences at different content levels, we compute user-category affinities (<code>user_cat_ctr</code>) and user-price affinities (<code>user_price_ctr</code>). Crucially, to handle cold-start users, we compute demographic group CTRs: age-bucket × category CTR (<code>age_cat_ctr</code>) and age-bucket × price CTR (<code>age_price_ctr</code>). These act as default fallbacks when user-specific history is absent.</p>
                         </div>
                     </div>
 
@@ -627,7 +628,14 @@
                         <div class="arch-step-num">3</div>
                         <div class="arch-step-content">
                             <h4>Step 3: Supervised Stacking Classifier</h4>
-                            <p>We train the Stage 2 Logistic Regression classifier on the second half of our training set using features generated from Step 1 and Step 2. This prevents target leakage and ensures robust, generalized weights.</p>
+                            <p>We train the Stage 2 Logistic Regression classifier (<code>LogisticRegression(C=0.1, max_iter=1000, n_jobs=-1)</code>) on Part 2 of our training set (27,000 interactions) using out-of-sample features computed from Part 1 (243,000 interactions). This stacked design prevents target leakage and optimizes blending coefficients. The features fed into the model include:
+                                <ul style="margin-left: 20px; margin-top: 8px; font-size: 0.9rem; color: var(--text-muted);">
+                                    <li><b>Collaborative Filtering Scores:</b> SVD prediction score (<code>svd_score</code>, 20 latent factors) and Cosine Item-CF prediction score (<code>cf_score</code>).</li>
+                                    <li><b>User & Item CTR Stats:</b> User click rate (<code>user_ctr</code>), user impression count (<code>user_imps</code>), item click rate (<code>item_ctr</code>), and item impression count (<code>item_imps</code>).</li>
+                                    <li><b>Content & Demographic CTRs:</b> User-category click rate (<code>user_cat_ctr</code>), user-price click rate (<code>user_price_ctr</code>), age-category click rate (<code>age_cat_ctr</code>), and age-price click rate (<code>age_price_ctr</code>).</li>
+                                    <li><b>One-Hot Encoded Variables:</b> User age group (5 dimensions), item category (5 dimensions), and item price bucket (4 dimensions).</li>
+                                </ul>
+                            </p>
                         </div>
                     </div>
 
@@ -652,7 +660,7 @@
                     classDef model fill:#1b382b,stroke:#2e7d32,stroke-width:2px,color:#fff;
                     classDef output fill:#341b3a,stroke:#4a148c,stroke-width:2px,color:#fff;
 
-                    subgraph Phase 1: Data Preparation & Splitting
+                    subgraph phase1 ["Phase 1: Data Preparation & Splitting"]
                         A["interactions.csv (300k rows)"] --> B[Chronological Split]
                         B -->|90%| C[Train + Val Set]
                         B -->|10%| D[Test Set]
@@ -660,19 +668,21 @@
                         C -->|10% Split| F["Part 2 (Train Classifier)"]
                     end
 
-                    subgraph Phase 2: Stage 1 Model Training
+                    subgraph phase2 ["Phase 2: Stage 1 Model Training"]
                         E --> G["1. Compute CTRs (User, Item, Cat, Price)"]
                         E --> H["2. SVD Matrix Factorization"]
                         E --> I["3. Collaborative Filtering (Item Similarity)"]
                     end
 
-                    subgraph Phase 3: Stage 2 Stacking & Training
-                        G & H & I --> J[Extract Features for Part 2]
+                    subgraph phase3 ["Phase 3: Stage 2 Stacking & Training"]
+                        G --> J[Extract Features for Part 2]
+                        H --> J
+                        I --> J
                         F --> J
                         J --> K["Train Logistic Regression Classifier"]
                     end
 
-                    subgraph Phase 4: Prediction & Inference for Test Users
+                    subgraph phase4 ["Phase 4: Prediction & Inference for Test Users"]
                         D -->|Identifies| L[Target Test Users]
                         M["1,000 Catalog Items"] --> N[Create User-Item Candidate Grid]
                         L --> N
@@ -681,7 +691,8 @@
                         O --> P[Predict Click Probabilities]
                         
                         C -->|Extract Click History| Q[List of user clicks in Train+Val]
-                        P & Q --> R["Exclusion Filtering (Set clicked = -1e9)"]
+                        P --> R["Exclusion Filtering (Set clicked = -1e9)"]
+                        Q --> R
                         
                         R --> S[Rank & Select Top 10]
                         S --> T["Save to recommendations.csv"]
@@ -710,10 +721,10 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </section>
 
         <!-- TAB 3: METRICS & INSIGHTS -->
-        <div id="metrics" class="tab-content">
+        <section id="metrics" class="tab-content" aria-labelledby="tab-btn-metrics">
             <div class="card">
                 <h2 class="section-title">📊 Dual Evaluation Strategy: How to Justify the Metrics</h2>
                 <p style="margin-bottom: 20px; font-size: 1.05rem; color: var(--text-color);">
@@ -761,11 +772,16 @@
                             <b>The Recruiter Pitch:</b> We rank only the ads actually shown to each user. This evaluates the model's actual ability to influence a click.
                         </p>
                         
-                        <div class="metric-grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 0 20px 0;">
+                        <div class="metric-grid" style="grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 0 0 20px 0;">
                             <div class="metric-card" style="padding: 15px; border-color: rgba(16, 185, 129, 0.2);">
                                 <div class="metric-val" style="font-size: 1.8rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">84.65%</div>
                                 <div class="metric-label" style="font-size: 0.75rem;">ROC AUC Score</div>
                                 <div class="metric-sub" style="font-size: 0.7rem; color: var(--accent-green);">85% Ranking Accuracy</div>
+                            </div>
+                            <div class="metric-card" style="padding: 15px; border-color: rgba(16, 185, 129, 0.2);">
+                                <div class="metric-val" style="font-size: 1.8rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">66.96%</div>
+                                <div class="metric-label" style="font-size: 0.75rem;">Mean Recall@10</div>
+                                <div class="metric-sub" style="font-size: 0.7rem; color: var(--accent-green);">Captures 2/3 of Clicked Ads</div>
                             </div>
                             <div class="metric-card" style="padding: 15px; border-color: rgba(16, 185, 129, 0.2);">
                                 <div class="metric-val" style="font-size: 1.8rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">62.10%</div>
@@ -880,15 +896,22 @@
                 <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; margin-bottom: 10px; text-align: center; font-size: 1.1rem; border: 1px solid rgba(255,255,255,0.04);">
                     \[\text{Global Recall@10} = \frac{\sum_{u \in U} |R_u(10) \cap C_u|}{\sum_{u \in U} |C_u|}\]
                 </div>
-                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0px;">
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
                     <b>Where:</b> \(R_u(10)\) is the top-10 recommended ads, and \(C_u\) is the actual clicks of user \(u\) in test. Measures the catalog-wide coverage of clicking behavior.
                 </p>
+
+                <h3 style="color: var(--primary-light); margin: 20px 0 10px; font-size: 1.15rem;">6. Within-Impression Recall@10</h3>
+                <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; margin-bottom: 10px; text-align: center; font-size: 1.1rem; border: 1px solid rgba(255,255,255,0.04);">
+                    \[\text{Within-Impression Recall@10} = \frac{1}{|U|} \sum_{u \in U} \frac{|R^{\text{shown}}_u(10) \cap C_u|}{|C_u|}\]
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0px;">
+                    <b>Where:</b> \(R^{\text{shown}}_u(10)\) is the top-10 recommended ads *among the items actually shown* to user \(u\), and \(C_u\) is the actual clicks of user \(u\) in the test set. This measures the model's ability to cover user click interest within the subset of ads they were exposed to.
+                </p>
             </div>
-        </div>
-        </div>
+        </section>
 
         <!-- TAB 4: KIDS GUIDE (ELI5) -->
-        <div id="eli5" class="tab-content">
+        <section id="eli5" class="tab-content" aria-labelledby="tab-btn-eli5">
             <div class="card" style="border-color: var(--primary-light);">
                 <h2 class="section-title" style="border-left-color: var(--primary-light);">🧸 Explain Like I'm 5 (ELI5): The Ads Recommendation Toy Store!</h2>
                 <p style="font-size: 1.05rem; margin-bottom: 25px; color: var(--text-color);">
@@ -978,12 +1001,11 @@
                         <li><b>Period 2 (Present)</b>: We test our matcher on this data to see what it gets right. The Blender learns how much to trust each matcher's opinion.</li>
                         <li><b>Period 3 (Future)</b>: We deploy the Blender to predict recommendations for new, upcoming customers.</li>
                     </ul>
-                </div>
             </div>
-        </div>
+        </section>
 
         <!-- TAB 5: INTERVIEW QUESTIONS & ANSWERS -->
-        <div id="interview" class="tab-content">
+        <section id="interview" class="tab-content" aria-labelledby="tab-btn-interview">
             <h2 class="section-title" style="margin-bottom: 25px;">🧠 Technical Interview Preparation</h2>
             
             <div class="faq-item">
@@ -1087,10 +1109,10 @@
             </div>
 
             <div class="faq-item">
-                <div class="faq-question">Q8: How do I justify the 84.65% ROC AUC and 62.10% NDCG@10 scores, and why do they prove my model is great?</div>
+                <div class="faq-question">Q8: How do I justify the 84.65% ROC AUC, 62.10% NDCG@10, and 66.96% Recall@10 scores, and why do they prove my model is great?</div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        <p><strong>Answer:</strong> These two scores are calculated using the <b>Within-Impression Ad Ranking (Strategy B)</b> evaluation. Here is how they are calculated, who they represent, and why they justify your model:</p>
+                        <p><strong>Answer:</strong> These scores are calculated using the <b>Within-Impression Ad Ranking (Strategy B)</b> evaluation. Here is how they are calculated, who they represent, and why they justify your model:</p>
                         <ul>
                             <li><strong>Who they represent (IMPORTANT)</strong>: <b>These metrics are NOT calculated only for the ~255 overlapping user hits. They are calculated across ALL 30,000 test interactions for ALL users.</b> This is a complete evaluation of how the model performs on the entire dataset.</li>
                             <li><strong>How they are calculated</strong>: For each user in the test set, we isolate the specific ads they were actually shown in the logs (an average of 3.16 ads). We use our stacking model to score and rank *only* those specific shown ads, then compare that ranking to their actual behavior (clicked vs. ignored).</li>
@@ -1103,6 +1125,9 @@
                                 <br>• <code>N_ignores</code> is the total number of ignored impressions in the test set (26,547).
                                 <br>• <code>I(...)</code> is 1.0 if the model assigned a higher probability to the click than the ignore, 0.5 if tied, and 0.0 if lower.
                                 <br>A score of ~85% means that <b>in 85% of cases, if we randomly draw a clicked impression and an ignored impression, the model correctly assigns a higher probability to the click.</b> This is an outstanding result showing excellent discriminative ability.
+                            </li>
+                            <li><strong>Justifying Recall@10 (66.96%)</strong>: 
+                                Within-impression Recall@10 measures what proportion of clicked ads are placed in the top-10 recommended list among the shown ads. Since users are shown an average of 3.16 ads, ranking the clicked ad high among the shown subset yields a Recall@10 of ~67%, capturing over 2/3 of the clicked ads in top slots.
                             </li>
                             <li><strong>Justifying NDCG@10 (62.10%)</strong>: Out of the ads shown to each user, our model places the clicked ads at or near the very top of their list. A score of ~62% proves that the user is immediately shown the most relevant ad at the top of their screen without having to scroll.</li>
                             <li><strong>Why the model is good</strong>: It combines collaborative filtering (SVD + Item-CF) with demographic target encoding. This allows it to personalize recommendations for active users (Model A) and route cold-start users to demographic preferences (Model B), leading to a highly accurate ranker in production.</li>
@@ -1171,8 +1196,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
         // Simple tab switching logic
@@ -1192,9 +1217,14 @@
             // Show the current tab, and add an "active" class to the button that opened the tab
             document.getElementById(tabId).className += " active";
             evt.currentTarget.className += " active";
-        }
 
-        // Accordion toggle logic removed - Q&As are now visible by default.
+            // If switching to solution tab, trigger Mermaid render after tab is visible
+            if (tabId === 'solution') {
+                setTimeout(function() {
+                    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+                }, 50);
+            }
+        }
     </script>
 </body>
 </html>
