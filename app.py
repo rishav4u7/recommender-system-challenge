@@ -367,8 +367,8 @@ else:
       <p style="color:#f0f6fc; font-size:0.82rem; font-weight:700; margin:0 0 6px 0; text-transform:uppercase; letter-spacing:0.04em;">⚠️ Note on Selection Bias & Dual Evaluation</p>
       <p style="color:#8b949e; font-size:0.78rem; margin:0; line-height:1.5;">
         Test users were shown an average of only <b>3.16 ads</b> out of the 1,000 catalog items. 
-        Because of this extreme <b>exposure bias</b>, recommending from the entire catalog yields a low absolute hit rate (~1.73%). 
-        However, when ranking only the ads actually shown to the user, our model achieves an <b>ROC AUC of 83.87%</b> and <b>NDCG@10 of 0.6213</b>, showing that it is highly accurate at predicting user interaction when ads are presented.
+        Because of this extreme <b>exposure bias</b>, recommending from the entire catalog yields a low absolute hit rate (~1.79%). 
+        However, when ranking only the ads actually shown to the user, our model achieves an <b>ROC AUC of 84.65%</b> and <b>NDCG@10 of 0.6210</b>, showing that it is highly accurate at predicting user interaction when ads are presented.
       </p>
     </div>
     """

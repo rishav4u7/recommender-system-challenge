@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ads Recommendation Project Guide & Interview Prep</title>
+    <!-- MathJax script for LaTeX equation rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -662,12 +664,12 @@
                         
                         <div class="metric-grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 0 20px 0;">
                             <div class="metric-card" style="padding: 15px;">
-                                <div class="metric-val" style="font-size: 1.8rem;">1.72%</div>
+                                <div class="metric-val" style="font-size: 1.8rem;">1.79%</div>
                                 <div class="metric-label" style="font-size: 0.75rem;">Mean Recall@10</div>
-                                <div class="metric-sub" style="font-size: 0.7rem;">Beats Random (1.0%) & Pop (1.41%)</div>
+                                <div class="metric-sub" style="font-size: 0.7rem;">Beats Pop (1.25%) & SVD (1.53%)</div>
                             </div>
                             <div class="metric-card" style="padding: 15px;">
-                                <div class="metric-val" style="font-size: 1.8rem;">0.88%</div>
+                                <div class="metric-val" style="font-size: 1.8rem;">0.93%</div>
                                 <div class="metric-label" style="font-size: 0.75rem;">Mean NDCG@10</div>
                                 <div class="metric-sub" style="font-size: 0.7rem;">Beats SVD Baseline (0.81%)</div>
                             </div>
@@ -692,12 +694,12 @@
                         
                         <div class="metric-grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 0 20px 0;">
                             <div class="metric-card" style="padding: 15px; border-color: rgba(16, 185, 129, 0.2);">
-                                <div class="metric-val" style="font-size: 1.8rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">83.87%</div>
+                                <div class="metric-val" style="font-size: 1.8rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">84.65%</div>
                                 <div class="metric-label" style="font-size: 0.75rem;">ROC AUC Score</div>
-                                <div class="metric-sub" style="font-size: 0.7rem; color: var(--accent-green);">84% Ranking Accuracy</div>
+                                <div class="metric-sub" style="font-size: 0.7rem; color: var(--accent-green);">85% Ranking Accuracy</div>
                             </div>
                             <div class="metric-card" style="padding: 15px; border-color: rgba(16, 185, 129, 0.2);">
-                                <div class="metric-val" style="font-size: 1.8rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">62.13%</div>
+                                <div class="metric-val" style="font-size: 1.8rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">62.10%</div>
                                 <div class="metric-label" style="font-size: 0.75rem;">Mean NDCG@10</div>
                                 <div class="metric-sub" style="font-size: 0.7rem; color: var(--accent-green);">Excellent Rank Order</div>
                             </div>
@@ -706,7 +708,7 @@
                         <div class="alert" style="padding: 15px; margin: 0; border-radius: 8px; background: rgba(16, 185, 129, 0.04); border-left-color: var(--accent-green);">
                             <span style="font-weight: 700; font-size: 0.85rem; color: var(--accent-green);">How to explain this:</span>
                             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; line-height: 1.4;">
-                                <b>"In 84% of cases, when a user was shown a set of ads, the model correctly predicted which ad they would click by ranking it higher than the ones they ignored."</b> This proves the model is highly effective in production.
+                                <b>"In 85% of cases, when a user was shown a set of ads, the model correctly predicted which ad they would click by ranking it higher than the ones they ignored."</b> This proves the model is highly effective in production.
                             </p>
                         </div>
                     </div>
@@ -961,7 +963,7 @@
                         <ul>
                             <li>Our model makes recommendations from the entire pool of 1,000 items (Strategy A).</li>
                             <li>If our model recommends a highly relevant product that the user would have clicked, but the platform never showed it in the test log, it is marked as a "miss" (0 score).</li>
-                            <li>Because test users were only shown 3.16 ads on average, the chance of our top-10 list overlapping with those specific 3.16 ads is mathematically small. This is why the global Recall@10 is 1.72%. It is not a model failure; it is a limitation of evaluating catalog-wide recommendations using sparse historical logs.</li>
+                            <li>Because test users were only shown 3.16 ads on average, the chance of our top-10 list overlapping with those specific 3.16 ads is mathematically small. This is why the global Recall@10 is 1.79%. It is not a model failure; it is a limitation of evaluating catalog-wide recommendations using sparse historical logs.</li>
                         </ul>
                         </p>
                     </div>
@@ -1016,14 +1018,14 @@
             </div>
 
             <div class="faq-item">
-                <div class="faq-question">Q8: How do I justify the 83.87% ROC AUC and 62.13% NDCG@10 scores, and why do they prove my model is great?</div>
+                <div class="faq-question">Q8: How do I justify the 84.65% ROC AUC and 62.10% NDCG@10 scores, and why do they prove my model is great?</div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
                         <p><strong>Answer:</strong> These two scores are calculated using the <b>Within-Impression Ad Ranking (Strategy B)</b> evaluation. Here is how they are calculated, who they represent, and why they justify your model:</p>
                         <ul>
                             <li><strong>Who they represent (IMPORTANT)</strong>: <b>These metrics are NOT calculated only for the ~255 overlapping user hits. They are calculated across ALL 30,000 test interactions for ALL users.</b> This is a complete evaluation of how the model performs on the entire dataset.</li>
                             <li><strong>How they are calculated</strong>: For each user in the test set, we isolate the specific ads they were actually shown in the logs (an average of 3.16 ads). We use our stacking model to score and rank *only* those specific shown ads, then compare that ranking to their actual behavior (clicked vs. ignored).</li>
-                            <li><strong>Justifying ROC AUC (83.87% / 83.64%)</strong>: 
+                            <li><strong>Justifying ROC AUC (84.65%)</strong>: 
                                 ROC AUC measures how well the model ranks positive instances (clicks) above negative instances (ignores) across all 30,000 interactions.
                                 <br><b>The Pairwise Formula (Mann-Whitney U statistic)</b>:
                                 <br><code style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; display: inline-block; margin: 5px 0; font-family: monospace;">AUC = Σ I(Score(Click) > Score(Ignore)) / (N_clicks * N_ignores)</code>
@@ -1031,9 +1033,9 @@
                                 <br>• <code>N_clicks</code> is the total number of clicks in the test set (3,453).
                                 <br>• <code>N_ignores</code> is the total number of ignored impressions in the test set (26,547).
                                 <br>• <code>I(...)</code> is 1.0 if the model assigned a higher probability to the click than the ignore, 0.5 if tied, and 0.0 if lower.
-                                <br>A score of ~84% means that <b>in 84% of cases, if we randomly draw a clicked impression and an ignored impression, the model correctly assigns a higher probability to the click.</b> This is an outstanding result showing excellent discriminative ability.
+                                <br>A score of ~85% means that <b>in 85% of cases, if we randomly draw a clicked impression and an ignored impression, the model correctly assigns a higher probability to the click.</b> This is an outstanding result showing excellent discriminative ability.
                             </li>
-                            <li><strong>Justifying NDCG@10 (62.13% / 61.91%)</strong>: Out of the ads shown to each user, our model places the clicked ads at or near the very top of their list. A score of ~62% proves that the user is immediately shown the most relevant ad at the top of their screen without having to scroll.</li>
+                            <li><strong>Justifying NDCG@10 (62.10%)</strong>: Out of the ads shown to each user, our model places the clicked ads at or near the very top of their list. A score of ~62% proves that the user is immediately shown the most relevant ad at the top of their screen without having to scroll.</li>
                             <li><strong>Why the model is good</strong>: It combines collaborative filtering (SVD + Item-CF) with demographic target encoding. This allows it to personalize recommendations for active users (Model A) and route cold-start users to demographic preferences (Model B), leading to a highly accurate ranker in production.</li>
                         </ul>
                     </div>
@@ -1049,14 +1051,14 @@
                             <li><strong>33% of users clicked nothing</strong>: Out of 9,497 test users, 3,136 users didn't click *any* ads during the test period. It is mathematically impossible to have a "hit" for them because there are no positive clicks in the ground truth. This leaves 6,361 users who clicked at least one ad.</li>
                             <li><strong>Extreme Exposure Bias (The 3.16 limit)</strong>: For those 6,361 active users, the historical system only showed them an average of <b>3.16 ads</b> out of 1,000. In Strategy A, our model makes recommendations out of all 1,000 items. If we recommend 10 items, the chance that our recommended list overlaps with the exact 3.16 ads they were shown is extremely small.</li>
                             <li><strong>Unobserved Interactions (The "Blind Spot")</strong>: If our model recommends 10 highly relevant items, but the historical system never showed those items to the user during the test window, we cannot observe their reaction. The offline log forces us to mark this as a "miss" (0 score). Thus, the ~255 users represent the small overlap where our global recommendations happened to match the historical ad server's impressions.</li>
-                            <li><strong>The Proof of Strategy B (ROC AUC = 83.64%)</strong>: When we remove this exposure bias and test our model on the ads *actually shown* to the users (comparing the clicked ad against the ignored ads for all users), the ROC AUC is 83.64%. This proves that **the model is highly effective at choosing the right ad**. If we deployed our model live to recommend items to all 9,497 users (instead of relying on the old ad server's choices), the actual CTR and user engagement would increase dramatically because the model's ranking ability is highly accurate.</li>
+                            <li><strong>The Proof of Strategy B (ROC AUC = 84.65%)</strong>: When we remove this exposure bias and test our model on the ads *actually shown* to the users (comparing the clicked ad against the ignored ads for all users), the ROC AUC is 84.65%. This proves that **the model is highly effective at choosing the right ad**. If we deployed our model live to recommend items to all 9,497 users (instead of relying on the old ad server's choices), the actual CTR and user engagement would increase dramatically because the model's ranking ability is highly accurate.</li>
                         </ol>
                     </div>
                 </div>
             </div>
 
             <div class="faq-item">
-                <div class="faq-question">Q10: If the model is so good at ranking clicked ads (83.64% ROC AUC), why didn't it rank them in the first place and recommend them in the top 10 globally?</div>
+                <div class="faq-question">Q10: If the model is so good at ranking clicked ads (84.65% ROC AUC), why didn't it rank them in the first place and recommend them in the top 10 globally?</div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
                         <p><strong>Answer:</strong> This is a very common point of confusion. The model actually *does* rank those clicked items highly, but ranking them <b>first out of 3 shown items</b> is very different from ranking them in the <b>top 10 out of 1,000 global items</b>. Here is the technical explanation:</p>
@@ -1090,7 +1092,7 @@
                                 This means the model is nearly perfect at identifying the correct ad to show.
                             </li>
                             <li><b>For All Users (Including zero-click users)</b>: 
-                                The overall chance of placing the clicked ad at the top (and scoring 0 if they clicked nothing) is <b>61.91%</b> (our overall Strategy B NDCG).
+                                The overall chance of placing the clicked ad at the top (and scoring 0 if they clicked nothing) is <b>62.10%</b> (our overall Strategy B NDCG).
                             </li>
                             <li><b>Comparison to Random Guessing</b>: 
                                 If John is shown 3 ads and we rank them randomly, the chance of placing the clicked ad at Position #1 is only 1 out of 3 = <b>33.33%</b>. 
