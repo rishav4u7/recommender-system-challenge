@@ -6,6 +6,22 @@
     <title>Ads Recommendation Project Guide & Interview Prep</title>
     <!-- MathJax script for LaTeX equation rendering -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Mermaid script for rendering flowcharts -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'dark',
+                themeVariables: {
+                    background: '#151d30',
+                    primaryColor: '#4f46e5',
+                    primaryTextColor: '#f3f4f6',
+                    lineColor: '#a855f7'
+                }
+            });
+        });
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -622,6 +638,59 @@
                             <p>To recommend top-10 items from all 1,000 candidates for 9,500 users, we avoid looping over users in Python. Instead, we compute predictions in parallel using **NumPy broadcasting**. All 9.5 million user-item logit scores are calculated via matrix operations in under 20 seconds, and the top-10 items (excluding train clicks) are extracted.</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">🗺️ Recommender System Backend Pipeline</h2>
+                <p style="margin-bottom: 25px;">Visualizing the chronological data flow, two-stage stacking, and the final personalized prediction/filtering steps:</p>
+                <div class="mermaid" style="background: rgba(21, 29, 48, 0.4); padding: 20px; border-radius: 12px; border: 1px solid var(--card-border); overflow-x: auto;">
+                graph TD
+                    %% Styling
+                    classDef data fill:#1d273d,stroke:#01579b,stroke-width:2px,color:#fff;
+                    classDef process fill:#2a2b4a,stroke:#fbc02d,stroke-width:2px,color:#fff;
+                    classDef model fill:#1b382b,stroke:#2e7d32,stroke-width:2px,color:#fff;
+                    classDef output fill:#341b3a,stroke:#4a148c,stroke-width:2px,color:#fff;
+
+                    subgraph Phase 1: Data Preparation & Splitting
+                        A["interactions.csv (300k rows)"] --> B[Chronological Split]
+                        B -->|90%| C[Train + Val Set]
+                        B -->|10%| D[Test Set]
+                        C -->|90% Split| E["Part 1 (Train Stats & CF)"]
+                        C -->|10% Split| F["Part 2 (Train Classifier)"]
+                    end
+
+                    subgraph Phase 2: Stage 1 Model Training
+                        E --> G["1. Compute CTRs (User, Item, Cat, Price)"]
+                        E --> H["2. SVD Matrix Factorization"]
+                        E --> I["3. Collaborative Filtering (Item Similarity)"]
+                    end
+
+                    subgraph Phase 3: Stage 2 Stacking & Training
+                        G & H & I --> J[Extract Features for Part 2]
+                        F --> J
+                        J --> K["Train Logistic Regression Classifier"]
+                    end
+
+                    subgraph Phase 4: Prediction & Inference for Test Users
+                        D -->|Identifies| L[Target Test Users]
+                        M["1,000 Catalog Items"] --> N[Create User-Item Candidate Grid]
+                        L --> N
+                        
+                        N --> O[Generate Prediction Features]
+                        O --> P[Predict Click Probabilities]
+                        
+                        C -->|Extract Click History| Q[List of user clicks in Train+Val]
+                        P & Q --> R["Exclusion Filtering (Set clicked = -1e9)"]
+                        
+                        R --> S[Rank & Select Top 10]
+                        S --> T["Save to recommendations.csv"]
+                    end
+
+                    class A,D,E,F,M,Q data;
+                    class B,J,N,O,R,S process;
+                    class G,H,I,K,P model;
+                    class T output;
                 </div>
             </div>
 
